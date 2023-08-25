@@ -23,6 +23,9 @@ UserRouter.get('/verify/:token', async (req, res) => {
 UserRouter.post('/auth', async (req, res) => {
     try {
         const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ message: "Email is required." });
+        }
         const existingUser = await HistoryModel.findOne({ email });
         if (existingUser) {
             if (existingUser.isVerified) {
@@ -37,7 +40,7 @@ UserRouter.post('/auth', async (req, res) => {
                     <h3>Token - ${rtoken}</h3>
                     `,
                 };
-                sgMail.send(mailOptions);
+               await sgMail.send(mailOptions);
 
                 res.status(200).json({
                     Response: {
@@ -48,7 +51,7 @@ UserRouter.post('/auth', async (req, res) => {
             } 
         }else {
             const token = jwt.sign({ email }, process.env.SECRET, { expiresIn: '24h' });
-            const verificationURL = `http://localhost:4500/verify/${token}`;
+            const verificationURL = `https://b1bk39s7l4.execute-api.us-east-1.amazonaws.com/dev/verify/${token}`;
             const user = new HistoryModel({
                 email
             });
@@ -63,7 +66,7 @@ UserRouter.post('/auth', async (req, res) => {
                 <a href="${verificationURL}">${verificationURL}</a>
                 `,
             };
-            sgMail.send(mailOptions);
+           await sgMail.send(mailOptions);
             
             res.status(200).json({
                 Response: {
@@ -79,7 +82,6 @@ UserRouter.post('/auth', async (req, res) => {
 UserRouter.get("/get-history", verifyToken, async (req, res) => {
     try {
         const email = req.email;
-        
         const history = await HistoryModel.aggregate([
             { $match: { email: email } },
             { $unwind: "$history" },

@@ -6,13 +6,13 @@ const cors = require("cors")
 require("dotenv").config()
 app.use(cors())
 app.use(express.json())
+connection.then(() => {
+    console.log("Connected to MongoDB");
+  }).catch((error) => {
+    console.error("Error connecting to MongoDB:", error);
+  });
 app.use(UserRouter)
-app.listen(4500,async()=>{
-    try {
-        await connection
-        console.log('Database connected to Application');
-    } catch (error) {
-        console.log(error.message);
-    }
-    console.log(`Server is running at port ${process.env.PORT}`);
+app.use("/",async(req,res)=>{
+    res.send({mssg:"Welcome to backend of Pdf-Sender"})
 })
+module.exports ={app}

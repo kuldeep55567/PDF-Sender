@@ -1,0 +1,21 @@
+service: pdf-sender
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: dev
+  region: us-east-1
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http: ANY /{proxy+}
+      - http: ANY /
+    environment:
+        PORT: 4500;
+        Mongo_URL: mongodb+srv://kuldeep:kuldeep@cluster0.vds9cyk.mongodb.net/PDF-Sender?retryWrites=true&w=majority
+        SECRET: masaiSecret
+        SEND_GRID_EMAIL: kuldeept5567@gmail.com
+        SEND_GRID_KEY: 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
